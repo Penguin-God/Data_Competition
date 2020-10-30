@@ -47,7 +47,7 @@
                 labelContainer.childNodes[i].innerHTML = classPrediction;
                 if(result.scores[i].toFixed(2) > 0.7 && i != 0){
                     document.getElementById("음성인식").innerHTML = classLabels[i];
-                    setTimeout(() => recognizer.stopListening(), 5000);
+                    setTimeout(() => recognizer.stopListening(), 300);
                 }
             }
         }, {
