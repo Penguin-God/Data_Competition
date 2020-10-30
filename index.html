@@ -31,6 +31,8 @@
     async function init() {
         const recognizer = await createModel();
         const classLabels = recognizer.wordLabels(); // get class labels
+        console.log(classLabels);
+        console.log(recognizer);
         const labelContainer = document.getElementById("label-container");
         for (let i = 0; i < classLabels.length; i++) {
             labelContainer.appendChild(document.createElement("div"));
@@ -45,8 +47,6 @@
             for (let i = 0; i < classLabels.length; i++) {
                 const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
-                if(classPrediction > 0.5)
-                    document.getElementById("음성인식").innerHTML = classLabels[i];
             }
         }, {
             includeSpectrogram: true, // in case listen should return result.spectrogram
