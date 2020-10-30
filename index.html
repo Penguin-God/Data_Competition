@@ -45,11 +45,9 @@
             for (let i = 0; i < classLabels.length; i++) {
                 const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
-                console.log(result.scores[i].toFixed(2));
-                if(result.scores[i].toFixed(2) > 0.5){
-                    console.log(i + "됐따!!!!!!!!!!!!!");
-                    console.log(classLabels[i]);
+                if(result.scores[i].toFixed(2) > 0.7 && i != 0){
                     document.getElementById("음성인식").innerHTML = classLabels[i];
+                    break;
                 }
             }
         }, {
