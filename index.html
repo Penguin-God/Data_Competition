@@ -1,7 +1,6 @@
 <div>Teachable Machine Audio Model</div>
 <button type="button" onclick="init()">Start</button>
 <div id="label-container"></div>
-<p id="음성인식">인식된 음성</p>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.4.0/dist/speech-commands.min.js"></script>
 
@@ -10,7 +9,7 @@
     // https://github.com/tensorflow/tfjs-models/tree/master/speech-commands
 
     // the link to your model provided by Teachable Machine export panel
-    const URL = "https://teachablemachine.withgoogle.com/models/J4pe3Wj5_/";
+    const URL = "https://teachablemachine.withgoogle.com/models/tpDt1-fJ7/";
 
     async function createModel() {
         const checkpointURL = URL + "model.json"; // model topology
@@ -30,7 +29,7 @@
 
     async function init() {
         const recognizer = await createModel();
-        const classLabels = recognizer.wordLabels(); // 학습기킨 클래스들 가져옴
+        const classLabels = recognizer.wordLabels(); // get class labels
         const labelContainer = document.getElementById("label-container");
         for (let i = 0; i < classLabels.length; i++) {
             labelContainer.appendChild(document.createElement("div"));
@@ -45,10 +44,6 @@
             for (let i = 0; i < classLabels.length; i++) {
                 const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
-                if(result.scores[i].toFixed(2) > 0.7 && i != 0){
-                    document.getElementById("음성인식").innerHTML = classLabels[i];
-                    setTimeout(() => recognizer.stopListening(), 300);
-                }
             }
         }, {
             includeSpectrogram: true, // in case listen should return result.spectrogram
@@ -56,5 +51,8 @@
             invokeCallbackOnNoiseAndUnknown: true,
             overlapFactor: 0.50 // probably want between 0.5 and 0.75. More info in README
         });
+
+        // Stop the recognition in 5 seconds.
+        // setTimeout(() => recognizer.stopListening(), 5000);
     }
 </script>
