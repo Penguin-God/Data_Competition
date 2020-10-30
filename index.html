@@ -46,6 +46,10 @@
                 const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
                 console.log(result.scores[i].toFixed(2));
+                if(result.scores[i].toFixed(2) > 0.5){
+                    console.log(i + "됐따!!!!!!!!!!!!!");
+                    document.getElementById("음성인식");
+                }
             }
         }, {
             includeSpectrogram: true, // in case listen should return result.spectrogram
