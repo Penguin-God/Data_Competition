@@ -12,7 +12,7 @@ class Region:
         self.regionName = path[0] + path[1]
         self.data = pd.read_csv(path, encoding="utf-8")
     
-    def Pirvate_GetCategoryDict(self, data, mainName, subName):
+    def Pirvate_GetCategoryDict(self, data, mainName, subName, hideEtc = True, deadLine = 1):
         mainCategory = set(data[mainName])
         subCategory = set(data[subName])
         result = {}
@@ -21,7 +21,8 @@ class Region:
             for sub in subCategory:
                 filt = ((data[mainName] == main) & (data[subName] == sub))
                 result[main][sub] = len(data[filt])
-                
+                if(hideEtc):
+                    self.HideEtc(result[main], deadLine)
         return result
 
     def GetCategoryDict(self, mainName, subName):
@@ -31,7 +32,7 @@ class Region:
         filter = (self.data[filt[0]] == filt[1])
         return self.Pirvate_GetCategoryDict(self.data[filter], mainName, subName)
 
-    def GetCategoryByCount(self, columnName):
+    def GetCategoryByCount(self, columnName, deadLine = 1):
         dic = {}
         
         for i in self.data[columnName]:
@@ -39,7 +40,23 @@ class Region:
                 dic[i] += 1
             else:
                 dic[i] = 1
+        self.HideEtc(dic, deadLine=deadLine)
         return {k: v for k, v in sorted(dic.items(), key=lambda item: item[1])}
+
+    def HideEtc(self, dic, deadLine = 1):
+        total = 0
+        for i in dic:
+            total += dic[i]
+        for i in dic.copy():
+            percent = dic[i] / float(total) * 100.0
+            if(percent < deadLine):
+                if('기타' in dic):
+                   dic['기타'] += dic[i]
+                else:
+                     dic['기타'] = dic[i]
+                dic.pop(i, dic[i])
+                
+                
 
 class GraphDrawer:
     def DictoinaryToPair(self, dic):
@@ -71,7 +88,7 @@ class GraphDrawer:
         plt.subplots_adjust(bottom=0.15, wspace=0.7, hspace=0.7)
         plt.show()
 
-    def ShowRegionGraphs(self, regions, columnName, type = 'bar'):
+    def ShowRegionGraphs(self, regions, columnName, type = 'bar', deadLine = 1):
         current = 0
         length = len(regions)
         ySize = round(math.sqrt(length))
@@ -82,9 +99,9 @@ class GraphDrawer:
             for graph in i:
                 if(len(regions) > current):
                     if(type == 'bar'):
-                        self.DrawBar(regions[current].GetCategoryByCount(columnName), graph, regions[current].regionName)
+                        self.DrawBar(regions[current].GetCategoryByCount(columnName, deadLine=deadLine), graph, regions[current].regionName)
                     elif(type == 'pie'):
-                        self.DrawPie(regions[current].GetCategoryByCount(columnName), graph, regions[current].regionName)
+                        self.DrawPie(regions[current].GetCategoryByCount(columnName, deadLine=deadLine), graph, regions[current].regionName)
                     current += 1
                 else:
                     break 
@@ -103,13 +120,13 @@ class GraphDrawer:
         ax.set_title(title)
         ax.pie(pair[1], labels=pair[0], autopct='%.1f%%')
 
-keyWord = '제주'
+keyWord = '.csv'
 regions = []
 for i in os.listdir():
     if(keyWord in i):
         regions.append(Region(i))
 
-# GraphDrawer().ShowRegionGraphs(regions, '상권업종대분류명')
+# GraphDrawer().ShowRegionGraphs(regions, '상권업종대분류명', 'pie', deadLine=3)
 
-GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict('시군구명', '상권업종대분류명'))
+# GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict('시군구명', '상권업종대분류명'))
 # GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict_HasFilt(['상권업종대분류명', '음식'], '상권업종대분류명', '상권업종소분류명'))
