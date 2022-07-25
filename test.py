@@ -11,7 +11,7 @@ class Region:
         self.regionName = path[0] + path[1]
         self.data = pd.read_csv(path, encoding="utf-8")
     
-    def Pirvate_GetCategoryDict(self, data, mainName, subName, deadLine = 1):
+    def Pirvate_GetCategoryDict(self, data, mainName, subName, hideEtc = True, deadLine = 1):
         mainCategory = set(data[mainName])
         result = {}
         for main in mainCategory:
@@ -115,13 +115,15 @@ class GraphDrawer:
             counts.append(dic[i])
         return (categorys, counts)
 
+
 keyWord = '제주'
 regions = []
 for i in os.listdir():
     if(keyWord in i):
         regions.append(Region(i))
 
-GraphDrawer().ShowRegionGraphs(regions, '상권업종대분류명', 'pie', deadLine=3)
 
-GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict('시군구명', '상권업종대분류명'))
+# GraphDrawer().ShowRegionGraphs(regions, '상권업종대분류명', 'pie', deadLine=3)
+
+#GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict('시군구명', '상권업종대분류명'))
 GraphDrawer().ShowDetailGraphs(regions[0].GetCategoryDict_HasFilt(['상권업종대분류명', '음식'], '상권업종대분류명', '상권업종소분류명'))
